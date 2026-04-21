@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "LineItem": {
+      "title": "LineItem",
+      "description": "A single item in a billing document",
+      "type": "object",
+      "properties": {
+        "desc": { "type": "string", "description": "Item description" },
+        "qty": { "type": "number", "description": "Quantity" },
+        "price": { "type": "number", "description": "Unit price" }
+      },
+      "required": ["desc", "qty", "price"]
+    },
+    "BillingDocument": {
+      "title": "BillingDocument",
+      "description": "A bill, challan, or quotation document",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["bill", "challan", "quotation"] },
+        "refNo": { "type": "string" },
+        "date": { "type": "string" },
+        "poNo": { "type": "string" },
+        "deliveryPeriod": { "type": "string" },
+        "customer": { "type": "string" },
+        "items": { "type": "array", "items": { "$ref": "LineItem" } },
+        "terms": { "type": "string" },
+        "notes": { "type": "string" },
+        "currency": { "type": "string" },
+        "total": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "refNo", "date", "customer", "items", "currency", "total", "createdAt"]
+    },
+    "AppSettings": {
+      "title": "AppSettings",
+      "description": "Application settings for the user",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone1": { "type": "string" },
+        "phone2": { "type": "string" },
+        "email": { "type": "string" },
+        "billCounter": { "type": "integer" },
+        "challanCounter": { "type": "integer" },
+        "quoteCounter": { "type": "integer" },
+        "currency": { "type": "string" }
+      },
+      "required": ["companyName", "address", "phone1", "phone2", "email", "billCounter", "challanCounter", "quoteCounter", "currency"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/settings/app": {
+      "schema": "AppSettings",
+      "description": "User specific application settings"
+    },
+    "/users/{userId}/documents/{docId}": {
+      "schema": "BillingDocument",
+      "description": "User specific billing documents"
+    }
+  }
+}

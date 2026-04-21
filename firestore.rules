@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users/{userId}/settings
+    // Document ID: app
+    // Fields:
+    //   - companyName: string (required)
+    //   - address: string (required)
+    //   - phone1: string (required)
+    //   - phone2: string (required)
+    //   - email: string (required)
+    //   - billCounter: number (required)
+    //   - challanCounter: number (required)
+    //   - quoteCounter: number (required)
+    //   - currency: string (required)
+    //
+    // Collection: users/{userId}/documents
+    // Document ID: {docId}
+    // Fields:
+    //   - type: string (required, enum: ["bill", "challan", "quotation"])
+    //   - refNo: string (required)
+    //   - date: string (required)
+    //   - poNo: string (optional)
+    //   - deliveryPeriod: string (optional)
+    //   - customer: string (required)
+    //   - items: list (required, list of maps with desc, qty, price)
+    //   - terms: string (optional)
+    //   - notes: string (optional)
+    //   - currency: string (required)
+    //   - total: number (required)
+    //   - createdAt: string (required, ISO 8601)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "workspaceforsystem@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidAppSettings(data) {
+      return hasRequiredFields(['companyName', 'address', 'phone1', 'phone2', 'email', 'billCounter', 'challanCounter', 'quoteCounter', 'currency', 'theme', 'defaultTerms', 'backupEmail']) &&
+             data.companyName is string && data.companyName.size() > 0 && data.companyName.size() < 200 &&
+             data.address is string && data.address.size() > 0 && data.address.size() < 500 &&
+             data.phone1 is string && data.phone1.size() > 0 && data.phone1.size() < 50 &&
+             data.phone2 is string && data.phone2.size() < 50 &&
+             data.email is string && isValidEmail(data.email) &&
+             data.billCounter is number && data.billCounter >= 0 &&
+             data.challanCounter is number && data.challanCounter >= 0 &&
+             data.quoteCounter is number && data.quoteCounter >= 0 &&
+             data.currency is string && data.currency.size() > 0 && data.currency.size() < 10 &&
+             data.theme is string && data.theme in ['dark', 'light'] &&
+             data.defaultTerms is string && data.defaultTerms.size() < 2000 &&
+             data.backupEmail is string && isValidEmail(data.backupEmail);
+    }
+
+    function isValidBillingDocument(data) {
+      return hasRequiredFields(['type', 'refNo', 'date', 'customer', 'items', 'currency', 'total', 'createdAt']) &&
+             data.type in ['bill', 'challan', 'quotation'] &&
+             data.refNo is string && data.refNo.size() > 0 && data.refNo.size() < 50 &&
+             data.date is string && data.date.size() > 0 && data.date.size() < 50 &&
+             data.customer is string && data.customer.size() > 0 && data.customer.size() < 200 &&
+             data.items is list && data.items.size() < 100 &&
+             data.currency is string && data.currency.size() > 0 && data.currency.size() < 10 &&
+             data.total is number &&
+             isValidDateString(data.createdAt);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      match /settings/app {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isOwner(userId) && isValidAppSettings(request.resource.data);
+      }
+
+      match /documents/{docId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidBillingDocument(request.resource.data);
+        allow update: if isOwner(userId) && isValidBillingDocument(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
