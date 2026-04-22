@@ -95,8 +95,6 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
 
       const canvas = await html2canvas(el, {
         scale: 3, 
-        useCORS: true,
-        allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
         width: 860, // Width with margins (approx A4 794 + 66px margin)
