@@ -208,10 +208,16 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    // Robust absolute path resolution for ESM
+    const __dirname = path.dirname(new URL(import.meta.url).pathname);
+    const distPath = path.resolve(__dirname, "dist");
+    
+    // Check if path starts with a windows-style drive letter (e.g. /C:/) and fix it for URL pathname
+    const finalDistPath = process.platform === 'win32' ? distPath.replace(/^\//, '') : distPath;
+
+    app.use(express.static(finalDistPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      res.sendFile(path.join(finalDistPath, "index.html"));
     });
   }
 
