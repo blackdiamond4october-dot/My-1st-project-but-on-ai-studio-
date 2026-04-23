@@ -94,7 +94,7 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
       await new Promise(r => setTimeout(r, 1000));
 
       const canvas = await html2canvas(el, {
-        scale: 4, 
+        scale: 3, // Reduced scale slightly for better performance/size balance
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
@@ -104,68 +104,69 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
         scrollX: 0,
         scrollY: 0,
         onclone: (clonedDoc) => {
+          clonedDoc.body.style.margin = '0';
+          clonedDoc.body.style.padding = '0';
           const docPaper = clonedDoc.querySelector('.doc-paper') as HTMLElement;
           if (docPaper) {
             docPaper.style.transform = 'none';
             docPaper.style.boxShadow = 'none';
             docPaper.style.margin = '0';
+            docPaper.style.padding = '32px'; // Standard padding
             docPaper.style.width = '794px';
+            docPaper.style.minHeight = 'unset'; // Remove fixed min-height to reduce extra whitespace
+            docPaper.style.border = 'none';
           }
         }
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate dimensions to fit width
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      // Calculate output height in mm
+      // 794px is ~210mm (A4 width)
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      // Simple one-page or multi-page support
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Create PDF with dynamic page size to remove excess bottom white space
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: [imgWidth, imgHeight]
+      });
 
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pdfHeight;
-
-      // Add subsequent pages if needed
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pdfHeight;
-      }
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
       
       const filename = `ZA_Precision_${doc.refNo}.pdf`;
       
-      // Use Web Share API for better mobile experience (specifically to fix the WhatsApp URL sharing issue)
-      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
-        const pdfBlob = pdf.output('blob');
-        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-        
-        if (navigator.canShare({ files: [file] })) {
-          try {
+      // Use Web Share API for better mobile experience
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        try {
+          const pdfBlob = pdf.output('blob');
+          const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+          
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               files: [file],
-              title: filename
+              title: `ZA Precision - ${doc.refNo}`,
+              text: `PDF Document: ${doc.refNo}`
             });
             return;
-          } catch (shareErr: any) {
-            // Only fallback if it's not a user cancellation
-            if (shareErr.name !== 'AbortError') {
-              console.warn('Share failed, falling back to download', shareErr);
-            } else {
-              return; // User cancelled the share sheet
-            }
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name !== 'AbortError') {
+            console.warn('Share failed:', shareErr);
+          } else {
+            return; // User cancelled
           }
         }
       }
       
-      // Default: Standard download
-      pdf.save(filename);
+      // Fallback: Use standard download or open in new tab for mobile
+      if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        const blobUrl = URL.createObjectURL(pdf.output('blob'));
+        window.open(blobUrl, '_blank');
+      } else {
+        pdf.save(filename);
+      }
     } catch (err) {
       console.error('PDF Error:', err);
       alert('Failed to generate PDF. Please try again or use the Print option.');
@@ -208,7 +209,7 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
               ) : (
                 <Download size={16} />
               )}
-              <span className="hidden sm:inline">{isGeneratingPDF ? 'GENERATING...' : 'SAVE PDF'}</span>
+              <span className="hidden sm:inline">{isGeneratingPDF ? 'GENERATING...' : 'SAVE / SHARE PDF'}</span>
             </button>
             <div className="w-px h-8 bg-white/5 mx-2" />
             <button 
