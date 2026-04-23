@@ -307,20 +307,35 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Safety timeout: if auth hasn't signaled ready in 5 seconds, force it.
+    // This prevents the "Infinite White Screen" on strict mobile browsers (Safari/Chrome Mobile)
+    const safetyTimeout = setTimeout(() => {
+      if (!isAuthReady) {
+        console.warn("Auth took too long; forcing ready state for mobile.");
+        setIsAuthReady(true);
+      }
+    }, 5000);
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsAuthReady(true);
+      clearTimeout(safetyTimeout);
     });
 
     // Handle mobile redirect login results
     if (window.innerWidth < 768) {
-      getRedirectResult(auth).catch((error) => {
+      getRedirectResult(auth).then(() => {
+        // Successful redirect login
+      }).catch((error) => {
         console.error("Redirect login error:", error);
       });
     }
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubscribe();
+      clearTimeout(safetyTimeout);
+    };
+  }, [isAuthReady]);
 
   // Sync Settings
   useEffect(() => {
