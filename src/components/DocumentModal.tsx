@@ -121,18 +121,15 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
 
       const imgData = canvas.toDataURL('image/png', 1.0);
       
-      // Calculate output height in mm
-      // 794px is ~210mm (A4 width)
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // Use fixed A4 format as per previous style
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
       
-      // Create PDF with dynamic page size to remove excess bottom white space
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: [imgWidth, imgHeight]
-      });
-
+      // Calculate dimensions to fit the width of A4
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      // Place image at the top (0,0) of the A4 page
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
       
       const filename = `ZA_Precision_${doc.refNo}.pdf`;
