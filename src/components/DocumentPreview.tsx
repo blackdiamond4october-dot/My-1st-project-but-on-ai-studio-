@@ -61,36 +61,36 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
         </div>
 
         {/* Info Bar */}
-        <div className="mb-10 px-2 space-y-6">
+        <div className="mb-8 px-2 space-y-6">
           {/* Row 1: Date & Ref No */}
-          <div className="grid grid-cols-2 gap-12">
-            <div className="relative border-b border-black h-9">
-              <span className="absolute top-0 left-0 text-[10px] font-black text-gray-700 uppercase tracking-wider leading-none">Date:</span>
-              <div className="pt-4 text-[12px] font-bold text-black px-1">
+          <div className="grid grid-cols-2 gap-16">
+            <div className="flex flex-col h-12 justify-end">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-1">Date:</span>
+              <div className="text-[13px] font-bold text-black border-b border-black pb-1">
                 {formatDate(data.date)}
               </div>
             </div>
-            <div className="relative border-b border-black h-9">
-              <span className="absolute top-0 left-0 text-[10px] font-black text-gray-700 uppercase tracking-wider leading-none">Ref No.</span>
-              <div className="pt-4 text-[12px] font-black text-black px-1 text-center font-mono w-full">
+            <div className="flex flex-col h-12 justify-end">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-1">Ref No.</span>
+              <div className="text-[13px] font-black text-black border-b border-black pb-1 inline-block font-mono tracking-wider">
                 {data.refNo}
               </div>
             </div>
           </div>
           
           {/* Row 2: Customer & PO No */}
-          <div className="grid grid-cols-2 gap-12">
-            <div className="relative border-b border-black h-9">
-              <span className="absolute top-0 left-0 text-[10px] font-black text-gray-700 uppercase tracking-wider leading-none">M/S.</span>
-              <div className="pt-4 text-[12px] font-bold text-black px-1 uppercase truncate">
+          <div className="grid grid-cols-2 gap-16">
+            <div className="flex flex-col h-12 justify-end">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-1">M/S.</span>
+              <div className="text-[13px] font-bold text-black border-b border-black pb-1 uppercase truncate">
                 {data.customer}
               </div>
             </div>
-            <div className="relative border-b border-black h-9">
+            <div className="flex flex-col h-12 justify-end">
               {type !== 'quotation' && (
                 <>
-                  <span className="absolute top-0 left-0 text-[10px] font-black text-gray-700 uppercase tracking-wider leading-none">Purchase Order No.</span>
-                  <div className="pt-4 text-[12px] font-bold text-black px-1 text-center w-full truncate">
+                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-1">Purchase Order No.</span>
+                  <div className="text-[13px] font-bold text-black border-b border-black pb-1 truncate">
                     {data.poNo || '---'}
                   </div>
                 </>
