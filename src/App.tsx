@@ -169,13 +169,29 @@ export default function App() {
   const login = async () => {
     try {
       const isMobile = window.innerWidth < 768;
+      
       if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
+        // Try popup first even on mobile, if it fails then redirect
+        // Popup is often more stable for "State" issues if allowed
+        try {
+          await signInWithPopup(auth, googleProvider);
+        } catch (popupErr: any) {
+          if (popupErr.code === 'auth/popup-blocked') {
+            await signInWithRedirect(auth, googleProvider);
+          } else {
+            throw popupErr;
+          }
+        }
       } else {
         await signInWithPopup(auth, googleProvider);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login attempt failed:", error);
+      if (error.message?.includes('missing initial state')) {
+        alert("Mobile Security Issue: Please disable 'Prevent Cross-Site Tracking' in your phone settings to log in.");
+      } else {
+        alert("Login Error: Please ensure cookies are enabled on your browser.");
+      }
     }
   };
 
