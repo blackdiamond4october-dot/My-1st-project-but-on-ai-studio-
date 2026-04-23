@@ -38,6 +38,8 @@ import {
   db, 
   googleProvider, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged, 
   User,
@@ -164,8 +166,17 @@ export default function App() {
     }
   }, [settings.theme]);
 
-  const login = () => {
-    signInWithPopup(auth, googleProvider).catch(console.error);
+  const login = async () => {
+    try {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        await signInWithPopup(auth, googleProvider);
+      }
+    } catch (error) {
+      console.error("Login attempt failed:", error);
+    }
   };
 
   const logout = () => {
@@ -300,6 +311,14 @@ export default function App() {
       setUser(currentUser);
       setIsAuthReady(true);
     });
+
+    // Handle mobile redirect login results
+    if (window.innerWidth < 768) {
+      getRedirectResult(auth).catch((error) => {
+        console.error("Redirect login error:", error);
+      });
+    }
+
     return () => unsubscribe();
   }, []);
 

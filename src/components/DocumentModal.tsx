@@ -90,8 +90,8 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
         });
       }));
 
-      // Sufficient time for layout stabilization
-      await new Promise(r => setTimeout(r, 400));
+      // Sufficient time for layout stabilization - increased for Base64 images
+      await new Promise(r => setTimeout(r, 1000));
 
       const canvas = await html2canvas(el, {
         scale: 4, 
