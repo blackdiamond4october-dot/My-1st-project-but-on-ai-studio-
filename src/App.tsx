@@ -166,31 +166,23 @@ export default function App() {
     }
   }, [settings.theme]);
 
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const login = async () => {
+    setAuthError(null);
     try {
-      const isMobile = window.innerWidth < 768;
-      
-      if (isMobile) {
-        // Try popup first even on mobile, if it fails then redirect
-        // Popup is often more stable for "State" issues if allowed
-        try {
-          await signInWithPopup(auth, googleProvider);
-        } catch (popupErr: any) {
-          if (popupErr.code === 'auth/popup-blocked') {
-            await signInWithRedirect(auth, googleProvider);
-          } else {
-            throw popupErr;
-          }
-        }
-      } else {
-        await signInWithPopup(auth, googleProvider);
-      }
+      // We are moving to 100% Popup-based login. 
+      // Redirects are failing on modern mobile browsers due to "Storage Partitioning".
+      await signInWithPopup(auth, googleProvider);
     } catch (error: any) {
       console.error("Login attempt failed:", error);
-      if (error.message?.includes('missing initial state')) {
-        alert("Mobile Security Issue: Please disable 'Prevent Cross-Site Tracking' in your phone settings to log in.");
+      
+      if (error.code === 'auth/popup-blocked') {
+        setAuthError("Your phone blocked the Login window. Please check your address bar and tap 'Always Allow' or 'Open'.");
+      } else if (error.message?.includes('missing initial state')) {
+        setAuthError("Device Security Conflict: Please try using Chrome incognito mode or ensure 'Prevent Cross-Site Tracking' is disabled.");
       } else {
-        alert("Login Error: Please ensure cookies are enabled on your browser.");
+        setAuthError("Login issue. Please try again or check your internet connection.");
       }
     }
   };
@@ -570,6 +562,12 @@ export default function App() {
             <p className="text-white/40 text-sm">Professional Billing & Document Management</p>
           </div>
           
+          {authError && (
+            <div className="w-full mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-[11px] text-center font-medium animate-pulse">
+              {authError}
+            </div>
+          )}
+
           <button 
             onClick={login}
             className="w-full flex items-center justify-center gap-3 py-4 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-all transform active:scale-95"
