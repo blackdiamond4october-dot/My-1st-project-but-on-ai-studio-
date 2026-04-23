@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2 } from 'lucide-react';
+import { X, Printer, Share2, Receipt, Package, ClipboardList, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BillingDocument, AppSettings } from '../types';
@@ -111,9 +111,9 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
             docPaper.style.transform = 'none';
             docPaper.style.boxShadow = 'none';
             docPaper.style.margin = '0';
-            docPaper.style.padding = '32px'; // Standard padding
+            docPaper.style.padding = '40px'; // Increased padding to pull borders inward
             docPaper.style.width = '794px';
-            docPaper.style.minHeight = 'unset'; // Remove fixed min-height to reduce extra whitespace
+            docPaper.style.minHeight = 'unset'; 
             docPaper.style.border = 'none';
           }
         }
@@ -202,14 +202,14 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
             <button 
               onClick={handleDownloadPDF}
               disabled={isGeneratingPDF}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-all text-xs font-bold disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20 transition-all text-xs font-bold disabled:opacity-50"
             >
               {isGeneratingPDF ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : (
-                <Download size={16} />
+                <Share2 size={16} />
               )}
-              <span className="hidden sm:inline">{isGeneratingPDF ? 'GENERATING...' : 'SAVE / SHARE PDF'}</span>
+              <span>{isGeneratingPDF ? 'PREPARING...' : 'SHARE PDF'}</span>
             </button>
             <div className="w-px h-8 bg-white/5 mx-2" />
             <button 
