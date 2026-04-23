@@ -98,7 +98,7 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        letterRendering: true,
+        letterRendering: false,
         width: 794,
         windowWidth: 794,
         height: el.scrollHeight,
