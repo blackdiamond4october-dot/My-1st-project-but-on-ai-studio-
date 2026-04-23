@@ -2,6 +2,12 @@ import React from 'react';
 import { BillingDocument } from '../types';
 import { formatCurrency, formatDate } from '../lib/utils';
 
+// Versioning for Vercel cache busting
+const V = "?v=2";
+const logoImg = `/logo-nobg.png${V}`;
+const companyNameImg = `/company-name.png${V}`;
+const signOfQualityImg = `/sign-of-quality.png${V}`;
+
 interface DocumentPreviewProps {
   data: any; // Partial<BillingDocument> + extra fields
 }
@@ -40,7 +46,7 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
           <div className="flex-1 flex flex-col items-center px-4 min-w-[400px]">
             <div className="text-[10px] font-bold tracking-widest text-gray-500 mb-3 uppercase h-4 flex items-center justify-center">{typeLabel}</div>
             <div className="h-20 mb-3 flex items-center justify-center">
-              <img src="/company-name.png" alt="ZA PRECISION ENGINEERING CO." className="h-full w-auto object-contain" />
+              <img src={companyNameImg} alt="ZA PRECISION ENGINEERING CO." className="h-full w-auto object-contain" />
             </div>
             <div className="text-[11px] font-bold text-gray-900 text-center space-y-1">
               <div>{data.address || 'Nadeem Park, Bund Road, Daroghawala, Lahore.'}</div>
@@ -50,7 +56,7 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
           </div>
 
           <div className="w-[140px] flex-shrink-0 flex justify-end">
-            <img src="/sign-of-quality.png" alt="Sign of Quality" className="h-24 w-auto object-contain" />
+            <img src={signOfQualityImg} alt="Sign of Quality" className="h-24 w-auto object-contain" />
           </div>
         </div>
 
@@ -230,7 +236,7 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
 export function ZALogo({ size = 100, className = "" }: { size?: number, className?: string }) {
   return (
     <img 
-      src="/logo-nobg.png" 
+      src={logoImg} 
       alt="ZA Precision Engineering Co." 
       width={size} 
       height={size} 
