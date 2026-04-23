@@ -61,29 +61,33 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
         </div>
 
         {/* Info Bar */}
-        <div className="flex justify-between items-start mb-6 pb-2 border-b-2 border-black">
-          <div className="flex flex-col space-y-3 flex-1">
-            <div className="text-[11px] font-bold flex items-end">
-              <span className="w-16 text-black">Date:</span>
-              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{formatDate(data.date)}</span>
+        <div className="mb-10 px-2">
+          {/* Row 1: Date & Ref No */}
+          <div className="flex justify-between items-end mb-5">
+            <div className="flex items-end border-b border-black pb-1 w-[320px]">
+              <span className="text-[11px] font-bold w-16 text-black">Date:</span>
+              <span className="text-[11px] font-medium px-2 flex-1">{formatDate(data.date)}</span>
             </div>
-            <div className="text-[11px] font-bold flex items-end">
-              <span className="w-16 text-black">M/S.</span>
-              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2 uppercase">{data.customer}</span>
+            <div className="flex items-end border-b border-black pb-1 w-[320px]">
+              <span className="text-[11px] font-bold w-20 text-black text-right pr-2">Ref No.</span>
+              <span className="text-[11px] font-medium px-2 flex-1 text-center font-mono">{data.refNo}</span>
             </div>
           </div>
           
-          <div className="flex flex-col space-y-3 w-[280px] ml-8">
-            <div className="text-[11px] font-bold flex items-end">
-              <span className="w-20 text-black">Ref No.</span>
-              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{data.refNo}</span>
+          {/* Row 2: Customer & PO No */}
+          <div className="flex justify-between items-end">
+            <div className="flex items-end border-b border-black pb-1 w-[320px]">
+              <span className="text-[11px] font-bold w-16 text-black">M/S.</span>
+              <span className="text-[11px] font-medium px-2 flex-1 uppercase truncate">{data.customer}</span>
             </div>
-            {type !== 'quotation' && (
-              <div className="text-[11px] font-bold flex items-end text-nowrap">
-                <span className="w-34 text-black">Purchase Order No.</span>
-                <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{data.poNo || ''}</span>
-              </div>
-            )}
+            <div className="flex items-end border-b border-black pb-1 w-[320px]">
+              {type !== 'quotation' && (
+                <>
+                  <span className="text-[11px] font-bold w-36 text-black text-right pr-2">Purchase Order No.</span>
+                  <span className="text-[11px] font-medium px-2 flex-1 text-center">{data.poNo || '---'}</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

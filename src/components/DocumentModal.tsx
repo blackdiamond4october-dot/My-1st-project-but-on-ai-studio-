@@ -94,57 +94,23 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
       await new Promise(r => setTimeout(r, 400));
 
       const canvas = await html2canvas(el, {
-        scale: 3, 
+        scale: 4, 
+        useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        width: 860, // Width with margins (approx A4 794 + 66px margin)
-        windowWidth: 1200, 
-        height: el.scrollHeight + 40,
+        letterRendering: true,
+        width: 794,
+        windowWidth: 794,
+        height: el.scrollHeight,
         scrollX: 0,
         scrollY: 0,
-        imageTimeout: 0,
         onclone: (clonedDoc) => {
-          // Find the cloned elements
-          const clonedHtml = clonedDoc.documentElement as HTMLElement;
-          const clonedBody = clonedDoc.body as HTMLElement;
-          
-          // Clear capture context
-          clonedHtml.style.width = '1200px';
-          clonedBody.style.width = '1200px';
-          clonedBody.style.backgroundColor = '#ffffff';
-          clonedBody.style.margin = '0';
-          clonedBody.style.padding = '0';
-          clonedBody.style.display = 'flex';
-          clonedBody.style.justifyContent = 'center';
-
-          // Target the printRef container in the clone
-          const clonedWrapper = clonedDoc.querySelector('[ref="printRef"]') || clonedDoc.body.firstChild?.firstChild;
-          // More robust selection for the capture target
-          const target = clonedDoc.querySelector('.doc-paper')?.parentElement as HTMLElement;
-          
-          if (target) {
-            target.style.width = '860px';
-            target.style.minWidth = '860px';
-            target.style.maxWidth = '860px';
-            target.style.height = 'auto';
-            target.style.padding = '33px 0'; // Vertical spacing
-            target.style.backgroundColor = '#ffffff';
-            target.style.display = 'flex';
-            target.style.justifyContent = 'center';
-            target.style.transform = 'none';
-            target.style.boxShadow = 'none';
-            target.style.margin = '0';
-          }
-
           const docPaper = clonedDoc.querySelector('.doc-paper') as HTMLElement;
           if (docPaper) {
-            docPaper.style.width = '794px';
-            docPaper.style.minWidth = '794px';
-            docPaper.style.margin = '0';
             docPaper.style.transform = 'none';
             docPaper.style.boxShadow = 'none';
-            docPaper.style.border = '1px solid #e2e8f0'; // Clean border
-            docPaper.style.position = 'relative';
+            docPaper.style.margin = '0';
+            docPaper.style.width = '794px';
           }
         }
       });
