@@ -61,26 +61,27 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
         </div>
 
         {/* Info Bar */}
-        <div className="flex justify-between items-end mb-4 border-b border-gray-800 pb-3">
-          <div className="flex flex-col space-y-2">
-            <div className="text-xs font-bold flex items-center gap-2">
-              <span className="w-12">Date:</span>
-              <span className="border-b border-gray-400 px-2 min-w-[150px] inline-block">{formatDate(data.date)}</span>
+        <div className="flex justify-between items-start mb-6 pb-2 border-b-2 border-black">
+          <div className="flex flex-col space-y-3 flex-1">
+            <div className="text-[11px] font-bold flex items-end">
+              <span className="w-16 text-black">Date:</span>
+              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{formatDate(data.date)}</span>
             </div>
-            <div className="text-xs font-bold flex items-center gap-2">
-              <span className="w-12">M/S.</span>
-              <span className="border-b border-gray-400 px-2 min-w-[250px] inline-block">{data.customer}</span>
+            <div className="text-[11px] font-bold flex items-end">
+              <span className="w-16 text-black">M/S.</span>
+              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2 uppercase">{data.customer}</span>
             </div>
           </div>
-          <div className="flex flex-col space-y-2 text-right">
-            <div className="text-xs font-bold flex items-center justify-end gap-2">
-              <span>Ref No.</span>
-              <span className="border-b border-gray-400 px-2 min-w-[100px] inline-block">{data.refNo}</span>
+          
+          <div className="flex flex-col space-y-3 w-[280px] ml-8">
+            <div className="text-[11px] font-bold flex items-end">
+              <span className="w-20 text-black">Ref No.</span>
+              <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{data.refNo}</span>
             </div>
             {type !== 'quotation' && (
-              <div className="text-xs font-bold flex items-center justify-end gap-2">
-                <span>Purchase Order No.</span>
-                <span className="border-b border-gray-400 px-2 min-w-[100px] inline-block">{data.poNo || ''}</span>
+              <div className="text-[11px] font-bold flex items-end text-nowrap">
+                <span className="w-34 text-black">Purchase Order No.</span>
+                <span className="flex-1 border-b border-black pb-0.5 ml-1 px-2">{data.poNo || ''}</span>
               </div>
             )}
           </div>
