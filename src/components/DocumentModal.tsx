@@ -98,7 +98,6 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        letterRendering: false,
         width: 794,
         windowWidth: 794,
         height: el.scrollHeight,
@@ -125,7 +124,34 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
-      pdf.save(`ZA_Precision_${doc.refNo}.pdf`);
+      
+      const filename = `ZA_Precision_${doc.refNo}.pdf`;
+      
+      // Use Web Share API for better mobile experience (specifically to fix the WhatsApp URL sharing issue)
+      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
+        const pdfBlob = pdf.output('blob');
+        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+        
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: filename
+            });
+            return;
+          } catch (shareErr: any) {
+            // Only fallback if it's not a user cancellation
+            if (shareErr.name !== 'AbortError') {
+              console.warn('Share failed, falling back to download', shareErr);
+            } else {
+              return; // User cancelled the share sheet
+            }
+          }
+        }
+      }
+      
+      // Default: Standard download
+      pdf.save(filename);
     } catch (err) {
       console.error('PDF Error:', err);
       alert('Failed to generate PDF. Please try again or use the Print option.');
