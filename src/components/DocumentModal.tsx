@@ -259,6 +259,8 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
 
 function FileIcon({ type }: { type: string }) {
   if (type === 'bill') return <Receipt size={20} />;
+  if (type === 'charge') return <Receipt size={20} className="text-purple-500" />;
+  if (type === 'payment') return <Receipt size={20} className="text-emerald-500" />;
   if (type === 'challan') return <Package size={20} />;
   return <ClipboardList size={20} />;
 }

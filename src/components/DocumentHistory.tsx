@@ -212,8 +212,10 @@ export default function DocumentHistory({ documents, onDelete, settings }: Docum
                   <span className={cn(
                     "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
                     doc.type === 'bill' ? "bg-orange-500/10 text-orange-500" :
+                    doc.type === 'charge' ? "bg-purple-500/10 text-purple-400" :
+                    doc.type === 'payment' ? "bg-emerald-500/10 text-emerald-400" :
                     doc.type === 'challan' ? "bg-blue-500/10 text-blue-400" :
-                    "bg-emerald-500/10 text-emerald-400"
+                    "bg-gray-500/10 text-gray-400"
                   )}>
                     {doc.type}
                   </span>
@@ -302,8 +304,10 @@ export default function DocumentHistory({ documents, onDelete, settings }: Docum
                         <span className={cn(
                           "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
                           doc.type === 'bill' ? "bg-orange-500/10 text-orange-500" :
+                          doc.type === 'charge' ? "bg-purple-500/10 text-purple-400" :
+                          doc.type === 'payment' ? "bg-emerald-500/10 text-emerald-400" :
                           doc.type === 'challan' ? "bg-blue-500/10 text-blue-400" :
-                          "bg-emerald-500/10 text-emerald-400"
+                          "bg-gray-500/10 text-gray-400"
                         )}>
                           {doc.type}
                         </span>

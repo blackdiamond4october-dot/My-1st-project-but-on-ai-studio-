@@ -56,9 +56,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
   const refNo = useMemo(() => {
     let counter, prefix;
     if (type === 'bill') { counter = settings.billCounter; prefix = 'BILL-'; }
-    else if (type === 'challan') { counter = settings.challanCounter; prefix = 'DC-'; }
-    else if (type === 'charge') { counter = settings.chargeCounter; prefix = 'CH-'; }
-    else if (type === 'payment') { counter = settings.paymentCounter; prefix = 'PM-'; }
+    else if (type === 'challan') { counter = settings.challanCounter; prefix = 'CH-'; }
     else { counter = settings.quoteCounter; prefix = 'QT-'; }
     return prefix + String(counter).padStart(4, '0');
   }, [type, settings]);
@@ -177,17 +175,13 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
           <h2 className={cn("text-xl font-bold flex items-center gap-3", settings.theme === 'dark' ? "text-white" : "text-black")}>
             New <span className="text-orange-500">
               {type === 'bill' ? 'Bill / Invoice' : 
-               type === 'challan' ? 'Delivery Challan' : 
-               type === 'quotation' ? 'Quotation' :
-               type === 'charge' ? 'Service Charge' : 'Payment Receipt'}
+               type === 'challan' ? 'Delivery Challan' : 'Quotation'}
             </span>
           </h2>
         </div>
 
         <div className={cn("flex flex-wrap gap-1 p-1 rounded-xl border", settings.theme === 'dark' ? "bg-[#07070d] border-white/5" : "bg-gray-100 border-black/5")}>
           <TypeTab active={type === 'bill'} onClick={() => navigate('/new?type=bill')} icon={<Receipt size={16} />} label="Bill" theme={settings.theme} />
-          <TypeTab active={type === 'charge'} onClick={() => navigate('/new?type=charge')} icon={<Receipt size={16} />} label="Charge" theme={settings.theme} />
-          <TypeTab active={type === 'payment'} onClick={() => navigate('/new?type=payment')} icon={<Receipt size={16} />} label="Payment" theme={settings.theme} />
           <TypeTab active={type === 'challan'} onClick={() => navigate('/new?type=challan')} icon={<Package size={16} />} label="Challan" theme={settings.theme} />
           <TypeTab active={type === 'quotation'} onClick={() => navigate('/new?type=quotation')} icon={<ClipboardList size={16} />} label="Quotation" theme={settings.theme} />
         </div>
@@ -384,17 +378,19 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
             </div>
           )}
 
-          <FormGroup label="Terms & Conditions" theme={settings.theme}>
-            <textarea 
-              value={terms} 
-              onChange={e => setTerms(e.target.value)}
-              rows={4}
-              className={cn(
-                "rounded-lg px-4 py-2.5 text-sm w-full outline-none focus:border-orange-500 transition-colors resize-none border",
-                settings.theme === 'dark' ? "bg-[#07070d] border-white/5 text-white" : "bg-gray-50 border-black/5 text-black"
-              )}
-            />
-          </FormGroup>
+          {type === 'bill' && (
+            <FormGroup label="Terms & Conditions" theme={settings.theme}>
+              <textarea 
+                value={terms} 
+                onChange={e => setTerms(e.target.value)}
+                rows={4}
+                className={cn(
+                  "rounded-lg px-4 py-2.5 text-sm w-full outline-none focus:border-orange-500 transition-colors resize-none border",
+                  settings.theme === 'dark' ? "bg-[#07070d] border-white/5 text-white" : "bg-gray-50 border-black/5 text-black"
+                )}
+              />
+            </FormGroup>
+          )}
 
           <FormGroup label="Notes / Remarks" theme={settings.theme}>
             <textarea 
