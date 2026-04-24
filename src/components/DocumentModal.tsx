@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2 } from 'lucide-react';
+import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BillingDocument, AppSettings } from '../types';
@@ -14,6 +14,7 @@ interface DocumentModalProps {
 export default function DocumentModal({ document: doc, settings, onClose }: DocumentModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   const handlePrint = () => {
     const content = printRef.current;
@@ -72,89 +73,107 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
     win.document.close();
   };
 
-  const handleDownloadPDF = async () => {
+  const generatePDFBlob = async () => {
     const el = printRef.current;
-    if (!el || isGeneratingPDF) return;
+    if (!el) return null;
 
-    setIsGeneratingPDF(true);
-    try {
-      // Ensure images AND fonts are loaded
-      await document.fonts.ready;
-      
-      const images = Array.from(el.querySelectorAll('img'));
-      await Promise.all(images.map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      }));
+    // Ensure images AND fonts are loaded
+    await document.fonts.ready;
+    
+    const images = Array.from(el.querySelectorAll('img'));
+    await Promise.all(images.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }));
 
-      // Sufficient time for layout stabilization - increased for Base64 images
-      await new Promise(r => setTimeout(r, 1000));
+    // Sufficient time for layout stabilization
+    await new Promise(r => setTimeout(r, 1000));
 
-      const canvas = await html2canvas(el, {
-        scale: 4, 
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        width: 794,
-        windowWidth: 794,
-        height: el.scrollHeight,
-        scrollX: 0,
-        scrollY: 0,
-        onclone: (clonedDoc) => {
-          const docPaper = clonedDoc.querySelector('.doc-paper') as HTMLElement;
-          if (docPaper) {
-            docPaper.style.transform = 'none';
-            docPaper.style.boxShadow = 'none';
-            docPaper.style.margin = '0';
-            docPaper.style.width = '794px';
-          }
+    const canvas = await html2canvas(el, {
+      scale: 4, 
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: 794,
+      windowWidth: 794,
+      height: el.scrollHeight,
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc) => {
+        const docPaper = clonedDoc.querySelector('.doc-paper') as HTMLElement;
+        if (docPaper) {
+          docPaper.style.transform = 'none';
+          docPaper.style.boxShadow = 'none';
+          docPaper.style.margin = '0';
+          docPaper.style.width = '794px';
         }
-      });
+      }
+    });
 
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvasWidth, canvasHeight]
-      });
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvasWidth, canvasHeight]
+    });
 
-      pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
-      
-      const filename = `ZA_Precision_${doc.refNo}.pdf`;
-      
-      // Use Web Share API for better mobile experience (specifically to fix the WhatsApp URL sharing issue)
-      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
+    pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
+    return { pdf, filename: `ZA_Precision_${doc.refNo}.pdf` };
+  };
+
+  const handleShare = async () => {
+    if (isSharing) return;
+    setIsSharing(true);
+    try {
+      const result = await generatePDFBlob();
+      if (!result) return;
+      const { pdf, filename } = result;
+
+      if (typeof navigator !== 'undefined' && navigator.share) {
         const pdfBlob = pdf.output('blob');
         const file = new File([pdfBlob], filename, { type: 'application/pdf' });
         
-        if (navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-              title: filename
-            });
-            return;
-          } catch (shareErr: any) {
-            // Only fallback if it's not a user cancellation
-            if (shareErr.name !== 'AbortError') {
-              console.warn('Share failed, falling back to download', shareErr);
-            } else {
-              return; // User cancelled the share sheet
-            }
-          }
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: filename,
+            text: `Document ${doc.refNo} from ZA Precision`
+          });
+        } else {
+          // Fallback if file sharing not supported
+          pdf.save(filename);
+          alert('Native sharing not supported on this browser. File has been downloaded instead.');
         }
+      } else {
+        pdf.save(filename);
+        alert('Sharing is not supported on this browser. File has been downloaded.');
       }
-      
-      // Default: Standard download
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Share Error:', err);
+        alert('Failed to share document.');
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (isGeneratingPDF) return;
+    setIsGeneratingPDF(true);
+    try {
+      const result = await generatePDFBlob();
+      if (!result) return;
+      const { pdf, filename } = result;
       pdf.save(filename);
     } catch (err) {
       console.error('PDF Error:', err);
-      alert('Failed to generate PDF. Please try again or use the Print option.');
+      alert('Failed to generate PDF.');
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -178,6 +197,18 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
           </div>
 
           <div className="flex items-center gap-2 lg:gap-4">
+            <button 
+              onClick={handleShare}
+              disabled={isSharing}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-black hover:bg-orange-600 transition-all text-xs font-bold disabled:opacity-50"
+            >
+              {isSharing ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Share2 size={16} />
+              )}
+              <span className="hidden sm:inline">{isSharing ? 'PREPARING...' : 'SHARE'}</span>
+            </button>
             <button 
               onClick={handlePrint}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"

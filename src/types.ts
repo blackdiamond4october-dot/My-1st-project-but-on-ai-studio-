@@ -1,4 +1,4 @@
-export type DocumentType = 'bill' | 'challan' | 'quotation';
+export type DocumentType = 'bill' | 'challan' | 'quotation' | 'charge' | 'payment';
 
 export interface LineItem {
   desc: string;
@@ -34,6 +34,8 @@ export interface AppSettings {
   billCounter: number;
   challanCounter: number;
   quoteCounter: number;
+  chargeCounter: number;
+  paymentCounter: number;
   currency: string;
   theme: 'dark' | 'light';
   defaultTerms: string;

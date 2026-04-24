@@ -67,6 +67,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   billCounter: 1,
   challanCounter: 1,
   quoteCounter: 1,
+  chargeCounter: 1,
+  paymentCounter: 1,
   currency: 'Rs.',
   theme: 'dark',
   defaultTerms: '1 : 50% Advance, 50% at the time of Delivery.\n2 :Inspection will be made by our workshop.\n3 :Delivery dates must be conceded after confirm order.\n4 :Exclusive sale tax',
@@ -401,9 +403,15 @@ export default function App() {
         const settingsSnap = await getDocFromServer(settingsRef);
         const latestSettings = settingsSnap.data() as AppSettings;
 
-        let prefix = docData.type === 'bill' ? 'BILL-' : docData.type === 'challan' ? 'DC-' : 'QT-';
-        let counterKey = docData.type === 'bill' ? 'billCounter' : docData.type === 'challan' ? 'challanCounter' : 'quoteCounter';
-        let counter = latestSettings[counterKey];
+        let prefix = docData.type === 'bill' ? 'BILL-' : 
+                     docData.type === 'challan' ? 'DC-' : 
+                     docData.type === 'charge' ? 'CH-' :
+                     docData.type === 'payment' ? 'PM-' : 'QT-';
+        let counterKey = docData.type === 'bill' ? 'billCounter' : 
+                         docData.type === 'challan' ? 'challanCounter' : 
+                         docData.type === 'charge' ? 'chargeCounter' :
+                         docData.type === 'payment' ? 'paymentCounter' : 'quoteCounter';
+        let counter = latestSettings[counterKey] || 1;
         
         finalDoc.refNo = prefix + String(counter).padStart(4, '0');
 
@@ -623,6 +631,8 @@ export default function App() {
               
               <div className={cn("px-6 mt-8 mb-4 text-[10px] tracking-widest uppercase font-bold", settings.theme === 'dark' ? "text-white/30" : "text-black/30")}>Create</div>
               <SidebarLink to="/new?type=bill" icon={<Receipt size={18} />} label="New Bill" theme={settings.theme} onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/new?type=charge" icon={<Receipt size={18} />} label="New Charge" theme={settings.theme} onClick={() => setIsSidebarOpen(false)} />
+              <SidebarLink to="/new?type=payment" icon={<Receipt size={18} />} label="New Payment" theme={settings.theme} onClick={() => setIsSidebarOpen(false)} />
               <SidebarLink to="/new?type=challan" icon={<Package size={18} />} label="New Challan" theme={settings.theme} onClick={() => setIsSidebarOpen(false)} />
               <SidebarLink to="/new?type=quotation" icon={<ClipboardList size={18} />} label="New Quotation" theme={settings.theme} onClick={() => setIsSidebarOpen(false)} />
               
@@ -714,6 +724,8 @@ export default function App() {
                   className="flex flex-col gap-2 mb-2"
                 >
                   {!location.search.includes('type=bill') && <QuickFab to="/new?type=bill" icon={<Receipt size={18} />} label="New Bill" color="bg-orange-500" onClick={() => setIsSidebarOpen(false)} />}
+                  {!location.search.includes('type=charge') && <QuickFab to="/new?type=charge" icon={<Receipt size={18} />} label="New Charge" color="bg-orange-600" onClick={() => setIsSidebarOpen(false)} />}
+                  {!location.search.includes('type=payment') && <QuickFab to="/new?type=payment" icon={<Receipt size={18} />} label="New Payment" color="bg-emerald-600" onClick={() => setIsSidebarOpen(false)} />}
                   {!location.search.includes('type=challan') && <QuickFab to="/new?type=challan" icon={<Package size={18} />} label="New Challan" color="bg-blue-500" onClick={() => setIsSidebarOpen(false)} />}
                   {!location.search.includes('type=quotation') && <QuickFab to="/new?type=quotation" icon={<ClipboardList size={18} />} label="New Quote" color="bg-emerald-500" onClick={() => setIsSidebarOpen(false)} />}
                 </motion.div>

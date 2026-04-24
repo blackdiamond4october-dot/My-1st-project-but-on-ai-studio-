@@ -57,6 +57,8 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
     let counter, prefix;
     if (type === 'bill') { counter = settings.billCounter; prefix = 'BILL-'; }
     else if (type === 'challan') { counter = settings.challanCounter; prefix = 'DC-'; }
+    else if (type === 'charge') { counter = settings.chargeCounter; prefix = 'CH-'; }
+    else if (type === 'payment') { counter = settings.paymentCounter; prefix = 'PM-'; }
     else { counter = settings.quoteCounter; prefix = 'QT-'; }
     return prefix + String(counter).padStart(4, '0');
   }, [type, settings]);
@@ -173,13 +175,19 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
       )}>
         <div className="flex items-center justify-between">
           <h2 className={cn("text-xl font-bold flex items-center gap-3", settings.theme === 'dark' ? "text-white" : "text-black")}>
-            New <span className="text-orange-500">{type === 'bill' ? 'Bill / Invoice' : type === 'challan' ? 'Delivery Challan' : 'Quotation'}</span>
+            New <span className="text-orange-500">
+              {type === 'bill' ? 'Bill / Invoice' : 
+               type === 'challan' ? 'Delivery Challan' : 
+               type === 'quotation' ? 'Quotation' :
+               type === 'charge' ? 'Service Charge' : 'Payment Receipt'}
+            </span>
           </h2>
         </div>
 
-        {/* Type Tabs */}
-        <div className={cn("flex p-1 rounded-xl border", settings.theme === 'dark' ? "bg-[#07070d] border-white/5" : "bg-gray-100 border-black/5")}>
+        <div className={cn("flex flex-wrap gap-1 p-1 rounded-xl border", settings.theme === 'dark' ? "bg-[#07070d] border-white/5" : "bg-gray-100 border-black/5")}>
           <TypeTab active={type === 'bill'} onClick={() => navigate('/new?type=bill')} icon={<Receipt size={16} />} label="Bill" theme={settings.theme} />
+          <TypeTab active={type === 'charge'} onClick={() => navigate('/new?type=charge')} icon={<Receipt size={16} />} label="Charge" theme={settings.theme} />
+          <TypeTab active={type === 'payment'} onClick={() => navigate('/new?type=payment')} icon={<Receipt size={16} />} label="Payment" theme={settings.theme} />
           <TypeTab active={type === 'challan'} onClick={() => navigate('/new?type=challan')} icon={<Package size={16} />} label="Challan" theme={settings.theme} />
           <TypeTab active={type === 'quotation'} onClick={() => navigate('/new?type=quotation')} icon={<ClipboardList size={16} />} label="Quotation" theme={settings.theme} />
         </div>

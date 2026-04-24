@@ -274,6 +274,8 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
 
           <div className="space-y-4">
             <SettingInput label="Bill Starting No." type="number" theme={settings.theme} value={formData.billCounter} onChange={v => handleChange('billCounter', parseInt(v) || 1)} />
+            <SettingInput label="Charge Starting No." type="number" theme={settings.theme} value={formData.chargeCounter || 1} onChange={v => handleChange('chargeCounter', parseInt(v) || 1)} />
+            <SettingInput label="Payment Starting No." type="number" theme={settings.theme} value={formData.paymentCounter || 1} onChange={v => handleChange('paymentCounter', parseInt(v) || 1)} />
             <SettingInput label="Challan Starting No." type="number" theme={settings.theme} value={formData.challanCounter} onChange={v => handleChange('challanCounter', parseInt(v) || 1)} />
             <SettingInput label="Quotation Starting No." type="number" theme={settings.theme} value={formData.quoteCounter} onChange={v => handleChange('quoteCounter', parseInt(v) || 1)} />
             
@@ -281,6 +283,8 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
               onClick={() => {
                 const boost = 100;
                 handleChange('billCounter', formData.billCounter + boost);
+                handleChange('chargeCounter', (formData.chargeCounter || 1) + boost);
+                handleChange('paymentCounter', (formData.paymentCounter || 1) + boost);
                 handleChange('challanCounter', formData.challanCounter + boost);
                 handleChange('quoteCounter', formData.quoteCounter + boost);
                 alert(`All counters boosted by ${boost}!`);

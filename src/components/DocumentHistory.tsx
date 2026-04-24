@@ -151,6 +151,8 @@ export default function DocumentHistory({ documents, onDelete, settings }: Docum
             >
               <option value="">All Types</option>
               <option value="bill">Bills</option>
+              <option value="charge">Charges</option>
+              <option value="payment">Payments</option>
               <option value="challan">Challans</option>
               <option value="quotation">Quotations</option>
             </select>
