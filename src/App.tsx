@@ -67,8 +67,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   billCounter: 1,
   challanCounter: 1,
   quoteCounter: 1,
-  chargeCounter: 1,
-  paymentCounter: 1,
   currency: 'Rs.',
   theme: 'dark',
   defaultTerms: '1 : 50% Advance, 50% at the time of Delivery.\n2 :Inspection will be made by our workshop.\n3 :Delivery dates must be conceded after confirm order.\n4 :Exclusive sale tax',

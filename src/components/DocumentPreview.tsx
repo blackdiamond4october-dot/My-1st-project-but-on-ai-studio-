@@ -202,7 +202,7 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
         <div className="mt-4 flex gap-4 items-start">
           {/* Terms & Conditions */}
           <div className="flex-1">
-            {type === 'bill' && data.terms && (
+            {type === 'quotation' && data.terms && (
               <div className="border border-gray-800 p-3 min-h-[80px]">
                 <div className="text-[10px] font-bold uppercase mb-1 underline">Terms & Conditions</div>
                 <div className="text-[9px] text-gray-800 font-medium space-y-0.5">

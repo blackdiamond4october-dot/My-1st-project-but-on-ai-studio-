@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { cn } from '../lib/utils';
 import { BillingDocument, AppSettings } from '../types';
 import DocumentPreview from './DocumentPreview';
 
@@ -15,6 +16,7 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
   const printRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [sharedFile, setSharedFile] = useState<File | null>(null);
 
   const handlePrint = () => {
     const content = printRef.current;
@@ -93,22 +95,36 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
     await new Promise(r => setTimeout(r, 1000));
 
     const canvas = await html2canvas(el, {
-      scale: 4, 
+      scale: 3,
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
       width: 794,
-      windowWidth: 794,
-      height: el.scrollHeight,
+      height: el.scrollHeight > 1123 ? el.scrollHeight : 1123,
+      x: 0,
+      y: 0,
       scrollX: 0,
       scrollY: 0,
       onclone: (clonedDoc) => {
+        const root = clonedDoc.getElementById('pdf-capture-root') as HTMLElement;
+        if (root) {
+          root.style.transform = 'none';
+          root.style.width = '794px';
+          root.style.height = 'auto';
+          root.style.margin = '0';
+          root.style.padding = '0';
+          root.style.display = 'block';
+          root.style.position = 'absolute';
+          root.style.top = '0';
+          root.style.left = '0';
+        }
         const docPaper = clonedDoc.querySelector('.doc-paper') as HTMLElement;
         if (docPaper) {
           docPaper.style.transform = 'none';
           docPaper.style.boxShadow = 'none';
           docPaper.style.margin = '0';
           docPaper.style.width = '794px';
+          docPaper.style.minHeight = '1123px';
         }
       }
     });
@@ -127,6 +143,22 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
   };
 
   const handleShare = async () => {
+    if (sharedFile) {
+      // Step 2: Share the prepared file (direct user gesture)
+      try {
+        if (navigator.share) {
+          await navigator.share({
+            files: [sharedFile],
+            title: sharedFile.name,
+            text: `Document ${doc.refNo} from ZA Precision`
+          });
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') alert('Failed to share.');
+      }
+      return;
+    }
+
     if (isSharing) return;
     setIsSharing(true);
     try {
@@ -134,30 +166,33 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
       if (!result) return;
       const { pdf, filename } = result;
 
+      const pdfBlob = pdf.output('blob');
+      const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+      setSharedFile(file);
+      
+      // Try calling share immediately, but if it fails due to gesture expiry, 
+      // the user will see "CLICK TO SEND" and can click again.
       if (typeof navigator !== 'undefined' && navigator.share) {
-        const pdfBlob = pdf.output('blob');
-        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-        
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: filename,
-            text: `Document ${doc.refNo} from ZA Precision`
-          });
-        } else {
-          // Fallback if file sharing not supported
-          pdf.save(filename);
-          alert('Native sharing not supported on this browser. File has been downloaded instead.');
+          try {
+            await navigator.share({
+              files: [file],
+              title: filename,
+              text: `Document ${doc.refNo} from ZA Precision`
+            });
+          } catch (shareErr: any) {
+            if (shareErr.name === 'NotAllowedError') {
+              // This is expected if the async generation took too long for a single gesture
+              // The button label change to "CLICK TO SEND" will handle the second step
+              console.log('Gesture expired, waiting for second click...');
+            } else if (shareErr.name !== 'AbortError') {
+              throw shareErr;
+            }
+          }
         }
-      } else {
-        pdf.save(filename);
-        alert('Sharing is not supported on this browser. File has been downloaded.');
       }
     } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        console.error('Share Error:', err);
-        alert('Failed to share document.');
-      }
+      console.error('Share Error:', err);
     } finally {
       setIsSharing(false);
     }
@@ -200,14 +235,19 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
             <button 
               onClick={handleShare}
               disabled={isSharing}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-black hover:bg-orange-600 transition-all text-xs font-bold disabled:opacity-50"
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-xs font-bold disabled:opacity-50",
+                sharedFile ? "bg-emerald-500 text-black hover:bg-emerald-600 animate-pulse" : "bg-orange-500 text-black hover:bg-orange-600"
+              )}
             >
               {isSharing ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : (
                 <Share2 size={16} />
               )}
-              <span className="hidden sm:inline">{isSharing ? 'PREPARING...' : 'SHARE'}</span>
+              <span className="hidden sm:inline">
+                {isSharing ? 'PREPARING...' : sharedFile ? 'CLICK TO SEND' : 'SHARE'}
+              </span>
             </button>
             <button 
               onClick={handlePrint}
@@ -242,6 +282,7 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
           <div className="min-h-min py-8 flex justify-center">
             <div 
               ref={printRef} 
+              id="pdf-capture-root"
               className="origin-top shadow-2xl transition-transform duration-300"
               style={{
                 transform: `scale(${typeof window !== 'undefined' && window.innerWidth < 1024 ? (window.innerWidth - 64) / 794 : 0.95})`,
@@ -259,8 +300,6 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
 
 function FileIcon({ type }: { type: string }) {
   if (type === 'bill') return <Receipt size={20} />;
-  if (type === 'charge') return <Receipt size={20} className="text-purple-500" />;
-  if (type === 'payment') return <Receipt size={20} className="text-emerald-500" />;
   if (type === 'challan') return <Package size={20} />;
   return <ClipboardList size={20} />;
 }

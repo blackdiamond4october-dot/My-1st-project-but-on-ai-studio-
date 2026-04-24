@@ -378,7 +378,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
             </div>
           )}
 
-          {type === 'bill' && (
+          {type === 'quotation' && (
             <FormGroup label="Terms & Conditions" theme={settings.theme}>
               <textarea 
                 value={terms} 
