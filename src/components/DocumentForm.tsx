@@ -101,10 +101,9 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
     }
 
     // Validate items
-    const invalidItem = items.find(item => item.desc.trim() && (item.qty <= 0 || (item.price === 0 && type !== 'challan')));
+    const invalidItem = items.find(item => item.desc.trim() && item.qty <= 0);
     if (invalidItem) {
-      if (invalidItem.qty <= 0) alert('Quantity must be greater than 0');
-      else alert('Please enter unit price for all items');
+      alert('Quantity must be greater than 0');
       return;
     }
 
@@ -324,13 +323,9 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
                           }}
                           className={cn(
                             "bg-transparent md:px-3 py-2 md:py-3 text-xs md:text-right outline-none focus:bg-orange-500/5 w-full", 
-                            settings.theme === 'dark' ? "text-white" : "text-black",
-                            item.desc && item.price === 0 && "border-b border-red-500"
+                            settings.theme === 'dark' ? "text-white" : "text-black"
                           )}
                         />
-                        {item.desc && item.price === 0 && (
-                          <div className="absolute -bottom-4 right-0 text-[8px] text-red-500 font-bold uppercase">Price Required</div>
-                        )}
                       </div>
                     )}
                     {type === 'bill' && (
