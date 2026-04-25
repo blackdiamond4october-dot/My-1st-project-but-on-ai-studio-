@@ -23,6 +23,9 @@ export interface BillingDocument {
   showLogo?: boolean;
   showWatermark?: boolean;
   showSignature?: boolean;
+  cnic?: string;
+  ntn?: string;
+  showCnicNtn?: boolean;
   createdAt: string;
 }
 
@@ -40,4 +43,7 @@ export interface AppSettings {
   defaultTerms: string;
   backupEmail: string;
   showSignatureByDefault: boolean;
+  cnic: string;
+  ntn: string;
+  showCnicNtnByDefault: boolean;
 }

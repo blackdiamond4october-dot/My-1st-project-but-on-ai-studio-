@@ -71,7 +71,10 @@ const DEFAULT_SETTINGS: AppSettings = {
   theme: 'dark',
   defaultTerms: '1 : 50% Advance, 50% at the time of Delivery.\n2 :Inspection will be made by our workshop.\n3 :Delivery dates must be conceded after confirm order.\n4 :Exclusive sale tax',
   backupEmail: 'workspaceforsystem@gmail.com',
-  showSignatureByDefault: true
+  showSignatureByDefault: true,
+  cnic: '33104-6971455-7',
+  ntn: '1363927-7',
+  showCnicNtnByDefault: false
 };
 
 // Error Boundary Component

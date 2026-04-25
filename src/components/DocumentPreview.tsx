@@ -48,7 +48,19 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
             <div className="h-20 mb-3 flex items-center justify-center">
               <img src={companyNameImg} alt="ZA PRECISION ENGINEERING CO." className="h-full w-auto object-contain" />
             </div>
-            <div className="text-[11px] font-bold text-gray-900 text-center space-y-1">
+            <div className="text-[11px] font-bold text-gray-900 text-center space-y-1 relative">
+              {data.showCnicNtn && data.type === 'bill' && (
+                <div className="absolute -left-[142px] top-[50px] transform text-left text-[12px] font-black text-black leading-tight">
+                  <div className="flex gap-1.5">
+                    <span>CNIC:</span>
+                    <span>{data.cnic || '33104-6971455-7'}</span>
+                  </div>
+                  <div className="flex gap-1.5 mt-0.5">
+                    <span>NTN No:</span>
+                    <span>{data.ntn || '1363927-7'}</span>
+                  </div>
+                </div>
+              )}
               <div>{data.address || 'Nadeem Park, Bund Road, Daroghawala, Lahore.'}</div>
               <div>Ph: {data.phone1 || '+92 333 7227025'} | {data.phone2 || '+92 321 9240587'}</div>
               {data.email && <div>Email: {data.email}</div>}

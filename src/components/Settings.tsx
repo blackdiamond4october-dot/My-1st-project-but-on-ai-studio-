@@ -185,6 +185,10 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-orange-500">@gmail.com</span>
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SettingInput label="Company CNIC" value={formData.cnic} theme={settings.theme} onChange={v => handleChange('cnic', v)} />
+              <SettingInput label="Company NTN" value={formData.ntn} theme={settings.theme} onChange={v => handleChange('ntn', v)} />
+            </div>
           </div>
         </div>
 
@@ -322,6 +326,29 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
                   <div className={cn(
                     "absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
                     formData.showSignatureByDefault ? "translate-x-5" : "translate-x-0"
+                  )}></div>
+                </div>
+                <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show on all Docs by default</span>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between p-4 rounded-xl border border-dashed border-white/5 bg-white/5">
+              <span className={cn("text-[10px] font-bold uppercase tracking-wider", settings.theme === 'dark' ? "text-white/30" : "text-black/30")}>Global CNIC/NTN Setting</span>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only" 
+                    checked={formData.showCnicNtnByDefault} 
+                    onChange={e => handleChange('showCnicNtnByDefault', e.target.checked)} 
+                  />
+                  <div className={cn(
+                    "w-10 h-5 rounded-full transition-all duration-300",
+                    formData.showCnicNtnByDefault ? "bg-orange-500" : "bg-white/10"
+                  )}></div>
+                  <div className={cn(
+                    "absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
+                    formData.showCnicNtnByDefault ? "translate-x-5" : "translate-x-0"
                   )}></div>
                 </div>
                 <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show on all Docs by default</span>

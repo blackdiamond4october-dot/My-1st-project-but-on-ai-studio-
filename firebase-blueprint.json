@@ -27,6 +27,10 @@
         "notes": { "type": "string" },
         "currency": { "type": "string" },
         "total": { "type": "number" },
+        "showSignature": { "type": "boolean" },
+        "cnic": { "type": "string" },
+        "ntn": { "type": "string" },
+        "showCnicNtn": { "type": "boolean" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["type", "refNo", "date", "customer", "items", "currency", "total", "createdAt"]
@@ -44,7 +48,14 @@
         "billCounter": { "type": "integer" },
         "challanCounter": { "type": "integer" },
         "quoteCounter": { "type": "integer" },
-        "currency": { "type": "string" }
+        "currency": { "type": "string" },
+        "theme": { "type": "string", "enum": ["dark", "light"] },
+        "defaultTerms": { "type": "string" },
+        "backupEmail": { "type": "string" },
+        "showSignatureByDefault": { "type": "boolean" },
+        "cnic": { "type": "string" },
+        "ntn": { "type": "string" },
+        "showCnicNtnByDefault": { "type": "boolean" }
       },
       "required": ["companyName", "address", "phone1", "phone2", "email", "billCounter", "challanCounter", "quoteCounter", "currency"]
     }

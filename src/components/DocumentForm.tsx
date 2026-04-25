@@ -50,6 +50,9 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState(settings.defaultTerms || '');
   const [showSignature, setShowSignature] = useState(settings.showSignatureByDefault ?? true);
+  const [cnic, setCnic] = useState(settings.cnic || '');
+  const [ntn, setNtn] = useState(settings.ntn || '');
+  const [showCnicNtn, setShowCnicNtn] = useState(settings.showCnicNtnByDefault ?? false);
   const [items, setItems] = useState<LineItem[]>([{ desc: '', qty: 1, price: 0, deliveryPeriod: '' }]);
   const [previewScale, setPreviewScale] = useState(0.48);
   const [isSaving, setIsSaving] = useState(false);
@@ -124,6 +127,9 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
       showLogo: true,
       showWatermark: true,
       showSignature,
+      cnic,
+      ntn,
+      showCnicNtn,
       currency: settings.currency,
       total: subtotal,
       createdAt: new Date().toISOString()
@@ -156,6 +162,9 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
     showLogo: true,
     showWatermark: true,
     showSignature,
+    cnic,
+    ntn,
+    showCnicNtn,
     currency: settings.currency,
     total: subtotal,
     address: settings.address,
@@ -389,7 +398,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
             </FormGroup>
           )}
 
-          <div className="flex items-center gap-6 p-4 rounded-xl border border-dashed border-white/5 bg-white/5">
+          <div className="flex flex-col gap-4 p-4 rounded-xl border border-dashed border-white/5 bg-white/5">
             <label className="flex items-center gap-3 cursor-pointer group">
               <div className="relative">
                 <input 
@@ -409,6 +418,47 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
               </div>
               <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show Authorized Sign</span>
             </label>
+
+            {type === 'bill' && (
+              <div className="border-t border-white/5 pt-4 space-y-4">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only" 
+                      checked={showCnicNtn} 
+                      onChange={e => setShowCnicNtn(e.target.checked)} 
+                    />
+                    <div className={cn(
+                      "w-10 h-5 rounded-full transition-all duration-300",
+                      showCnicNtn ? "bg-orange-500" : "bg-white/10"
+                    )}></div>
+                    <div className={cn(
+                      "absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
+                      showCnicNtn ? "translate-x-5" : "translate-x-0"
+                    )}></div>
+                  </div>
+                  <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show CNIC & NTN</span>
+                </label>
+
+                {showCnicNtn && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="CNIC" theme={settings.theme}>
+                      <input type="text" value={cnic} onChange={e => setCnic(e.target.value)} placeholder="00000-0000000-0" className={cn(
+                        "rounded-lg px-4 py-2 text-xs w-full outline-none focus:border-orange-500 transition-colors border",
+                        settings.theme === 'dark' ? "bg-[#07070d] border-white/5 text-white" : "bg-gray-50 border-black/5 text-black"
+                      )} />
+                    </FormGroup>
+                    <FormGroup label="NTN" theme={settings.theme}>
+                      <input type="text" value={ntn} onChange={e => setNtn(e.target.value)} placeholder="0000000-0" className={cn(
+                        "rounded-lg px-4 py-2 text-xs w-full outline-none focus:border-orange-500 transition-colors border",
+                        settings.theme === 'dark' ? "bg-[#07070d] border-white/5 text-white" : "bg-gray-50 border-black/5 text-black"
+                      )} />
+                    </FormGroup>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <FormGroup label="Notes / Remarks" theme={settings.theme}>
