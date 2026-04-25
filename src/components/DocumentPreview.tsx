@@ -224,9 +224,9 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
             <div className="text-center relative">
               {data.showSignature && (
                 <img 
-                  src="/WhatsApp_Image_2026-04-25_at_11.43.39_AM-removebg-preview.png" 
+                  src="/signature.png" 
                   alt="Signature" 
-                  className="absolute -top-[54px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
+                  className="absolute -top-[114px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
                   referrerPolicy="no-referrer"
                 />
               )}

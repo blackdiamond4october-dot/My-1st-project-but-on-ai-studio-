@@ -19,7 +19,7 @@ export default function DocumentModal({ document: doc, settings, onUpdate, onClo
   const [isSharing, setIsSharing] = useState(false);
   const [sharedFile, setSharedFile] = useState<File | null>(null);
   const [isEditingDate, setIsEditingDate] = useState(false);
-  const [newDate, setNewDate] = useState(doc.date);
+  const [newDate, setNewDate] = useState(doc.date || '');
   const [isUpdatingDate, setIsUpdatingDate] = useState(false);
 
   const handleUpdateDate = async () => {

@@ -48,8 +48,8 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
   const [poNo, setPoNo] = useState('');
   const [deliveryPeriod, setDeliveryPeriod] = useState('');
   const [notes, setNotes] = useState('');
-  const [terms, setTerms] = useState(settings.defaultTerms);
-  const [showSignature, setShowSignature] = useState(settings.showSignatureByDefault);
+  const [terms, setTerms] = useState(settings.defaultTerms || '');
+  const [showSignature, setShowSignature] = useState(settings.showSignatureByDefault ?? true);
   const [items, setItems] = useState<LineItem[]>([{ desc: '', qty: 1, price: 0, deliveryPeriod: '' }]);
   const [previewScale, setPreviewScale] = useState(0.48);
   const [isSaving, setIsSaving] = useState(false);
@@ -282,7 +282,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
                       <label className="md:hidden text-[8px] font-bold text-orange-500 uppercase">Description</label>
                       <input 
                         type="text" 
-                        value={item.desc} 
+                        value={item.desc || ''} 
                         onChange={e => handleItemChange(i, 'desc', e.target.value)}
                         placeholder="Item description"
                         className={cn("bg-transparent md:px-3 py-2 md:py-3 text-xs outline-none focus:bg-orange-500/5 w-full", settings.theme === 'dark' ? "text-white" : "text-black")}
@@ -305,7 +305,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
                         <label className="md:hidden text-[8px] font-bold text-orange-500 uppercase">Qty</label>
                         <input 
                           type="number"
-                          value={item.qty} 
+                          value={item.qty ?? 1} 
                           onChange={e => handleItemChange(i, 'qty', parseFloat(e.target.value) || 1)}
                           className={cn("bg-transparent md:px-3 py-2 md:py-3 text-xs md:text-center outline-none focus:bg-orange-500/5 w-full", settings.theme === 'dark' ? "text-white" : "text-black")}
                         />
@@ -316,7 +316,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
                         <label className="md:hidden text-[8px] font-bold text-orange-500 uppercase">Unit Price</label>
                         <input 
                           type="number" 
-                          value={item.price} 
+                          value={item.price ?? 0} 
                           onChange={e => {
                             const val = parseFloat(e.target.value) || 0;
                             if (val <= 100000000) {

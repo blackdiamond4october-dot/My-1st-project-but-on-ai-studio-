@@ -474,13 +474,13 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
   );
 }
 
-function SettingInput({ label, value, onChange, theme, type = "text" }: { label: string, value: string | number, onChange: (v: string) => void, theme: 'dark' | 'light', type?: string }) {
+function SettingInput({ label, value, onChange, theme, type = "text" }: { label: string, value: string | number | boolean, onChange: (v: string) => void, theme: 'dark' | 'light', type?: string }) {
   return (
     <div className="space-y-1.5">
       <label className={cn("block text-[10px] font-bold uppercase tracking-wider", theme === 'dark' ? "text-white/30" : "text-black/30")}>{label}</label>
       <input 
         type={type} 
-        value={value} 
+        value={String(value ?? '')} 
         onChange={e => onChange(e.target.value)}
         className={cn(
           "w-full border rounded-lg px-4 py-2.5 text-sm outline-none focus:border-orange-500 transition-all",
