@@ -18,7 +18,7 @@ import DocumentPreview from './DocumentPreview';
 
 interface DocumentFormProps {
   settings: AppSettings;
-  onSave: (doc: BillingDocument) => void;
+  onSave: (doc: BillingDocument) => Promise<void>;
 }
 
 export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
@@ -85,7 +85,7 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
     setItems(newItems);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!customer.trim()) {
       alert('Please enter customer name');
       return;
@@ -135,10 +135,15 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
       createdAt: new Date().toISOString()
     };
 
-    onSave(doc);
-    setTimeout(() => {
+    try {
+      await onSave(doc);
       navigate('/history');
-    }, 500);
+    } catch (err) {
+      console.error("Save error", err);
+      setIsSaving(false);
+      // The error will likely be caught by handleFirestoreError and reported.
+      // But we need to ensure the button is no longer "saving".
+    }
   };
 
   const handleReset = () => {

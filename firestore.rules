@@ -74,7 +74,7 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidAppSettings(data) {
-      return hasRequiredFields(['companyName', 'address', 'phone1', 'phone2', 'email', 'billCounter', 'challanCounter', 'quoteCounter', 'currency', 'theme', 'defaultTerms', 'backupEmail', 'showSignatureByDefault', 'cnic', 'ntn', 'showCnicNtnByDefault']) &&
+      return hasRequiredFields(['companyName', 'address', 'phone1', 'phone2', 'email', 'billCounter', 'challanCounter', 'quoteCounter', 'currency', 'theme', 'defaultTerms', 'backupEmail']) &&
              data.companyName is string && data.companyName.size() > 0 && data.companyName.size() < 200 &&
              data.address is string && data.address.size() > 0 && data.address.size() < 500 &&
              data.phone1 is string && data.phone1.size() > 0 && data.phone1.size() < 50 &&
@@ -87,10 +87,10 @@ service cloud.firestore {
              data.theme is string && data.theme in ['dark', 'light'] &&
              data.defaultTerms is string && data.defaultTerms.size() < 2000 &&
              data.backupEmail is string && isValidEmail(data.backupEmail) &&
-             data.showSignatureByDefault is bool &&
-             data.cnic is string && data.cnic.size() < 50 &&
-             data.ntn is string && data.ntn.size() < 50 &&
-             data.showCnicNtnByDefault is bool;
+             (data.get('showSignatureByDefault', true) is bool) &&
+             (data.get('cnic', '') is string) &&
+             (data.get('ntn', '') is string) &&
+             (data.get('showCnicNtnByDefault', false) is bool);
     }
 
     function isValidBillingDocument(data) {
@@ -103,6 +103,12 @@ service cloud.firestore {
              data.currency is string && data.currency.size() > 0 && data.currency.size() < 10 &&
              data.total is number &&
              isValidDateString(data.createdAt) &&
+             (data.get('poNo', '') is string) &&
+             (data.get('deliveryPeriod', '') is string) &&
+             (data.get('terms', '') is string) &&
+             (data.get('notes', '') is string) &&
+             (data.get('showLogo', true) is bool) &&
+             (data.get('showWatermark', true) is bool) &&
              (data.get('showSignature', true) is bool) &&
              (data.get('cnic', '') is string) &&
              (data.get('ntn', '') is string) &&

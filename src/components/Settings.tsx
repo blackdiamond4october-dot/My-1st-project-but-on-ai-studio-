@@ -27,10 +27,10 @@ import { cn } from '../lib/utils';
 interface SettingsProps {
   settings: AppSettings;
   documents: BillingDocument[];
-  onSave: (settings: AppSettings) => void;
-  onImport: (docs: BillingDocument[], settings: AppSettings) => void;
-  onClear: () => void;
-  onConnectDrive: () => void;
+  onSave: (settings: AppSettings) => Promise<void>;
+  onImport: (docs: BillingDocument[], settings: AppSettings) => Promise<void>;
+  onClear: () => Promise<void>;
+  onConnectDrive: () => Promise<void>;
   driveToken: string | null;
   isConnectingDrive?: boolean;
 }
@@ -69,13 +69,13 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
     setIsSaved(false);
   };
 
-  const handleSave = () => {
-    onSave(formData);
+  const handleSave = async () => {
+    await onSave(formData);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
 
-  const handleBoostCounters = () => {
+  const handleBoostCounters = async () => {
     const nextSettings = {
       ...formData,
       billCounter: formData.billCounter + 1,
@@ -83,7 +83,7 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
       quoteCounter: formData.quoteCounter + 1
     };
     setFormData(nextSettings);
-    onSave(nextSettings);
+    await onSave(nextSettings);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
