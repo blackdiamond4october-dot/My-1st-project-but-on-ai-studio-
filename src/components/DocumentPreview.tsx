@@ -3,6 +3,7 @@ import { BillingDocument } from '../types';
 import { formatCurrency, formatDate } from '../lib/utils';
 
 import { LOGO_BASE64, COMPANY_NAME_BASE64, SIGN_OF_QUALITY_BASE64 } from '../image-data';
+import signatureImg from '../signature.png';
 
 const logoImg = LOGO_BASE64;
 const companyNameImg = COMPANY_NAME_BASE64;
@@ -224,7 +225,7 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
             <div className="text-center relative">
               {data.showSignature && (
                 <img 
-                  src="/signature.png" 
+                  src={signatureImg} 
                   alt="Signature" 
                   className="absolute -top-[114px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
                   referrerPolicy="no-referrer"
