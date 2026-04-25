@@ -22,6 +22,7 @@ export interface BillingDocument {
   total: number;
   showLogo?: boolean;
   showWatermark?: boolean;
+  showSignature?: boolean;
   createdAt: string;
 }
 
@@ -38,4 +39,5 @@ export interface AppSettings {
   theme: 'dark' | 'light';
   defaultTerms: string;
   backupEmail: string;
+  showSignatureByDefault: boolean;
 }

@@ -70,7 +70,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   currency: 'Rs.',
   theme: 'dark',
   defaultTerms: '1 : 50% Advance, 50% at the time of Delivery.\n2 :Inspection will be made by our workshop.\n3 :Delivery dates must be conceded after confirm order.\n4 :Exclusive sale tax',
-  backupEmail: 'workspaceforsystem@gmail.com'
+  backupEmail: 'workspaceforsystem@gmail.com',
+  showSignatureByDefault: true
 };
 
 // Error Boundary Component
@@ -697,9 +698,9 @@ export default function App() {
             {/* Content Area */}
             <div className="flex-1 p-6 lg:p-8">
               <Routes>
-                <Route path="/" element={<Dashboard documents={documents} settings={settings} />} />
+                <Route path="/" element={<Dashboard documents={documents} settings={settings} onUpdate={addDocument} />} />
                 <Route path="/new" element={<DocumentForm settings={settings} onSave={addDocument} />} />
-                <Route path="/history" element={<DocumentHistory documents={documents} onDelete={deleteDocument} settings={settings} />} />
+                <Route path="/history" element={<DocumentHistory documents={documents} onDelete={deleteDocument} onUpdate={addDocument} settings={settings} />} />
                 <Route path="/settings" element={<Settings settings={settings} documents={documents} onSave={updateSettings} onImport={importData} onClear={clearAllDocuments} onConnectDrive={connectGoogleDrive} driveToken={driveToken} isConnectingDrive={isConnectingDrive} />} />
               </Routes>
             </div>

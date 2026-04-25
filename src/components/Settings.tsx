@@ -64,7 +64,7 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
     setFormData(settings);
   }, [settings]);
 
-  const handleChange = (field: keyof AppSettings, value: string | number) => {
+  const handleChange = (field: keyof AppSettings, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setIsSaved(false);
   };
@@ -305,6 +305,29 @@ export default function Settings({ settings, documents, onSave, onImport, onClea
           <div className="space-y-4">
             <SettingInput label="Backup Email (All users data)" value={formData.backupEmail} theme={settings.theme} onChange={v => handleChange('backupEmail', v)} />
             
+            <div className="flex items-center justify-between p-4 rounded-xl border border-dashed border-white/5 bg-white/5">
+              <span className={cn("text-[10px] font-bold uppercase tracking-wider", settings.theme === 'dark' ? "text-white/30" : "text-black/30")}>Global Signature Setting</span>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only" 
+                    checked={formData.showSignatureByDefault} 
+                    onChange={e => handleChange('showSignatureByDefault', e.target.checked)} 
+                  />
+                  <div className={cn(
+                    "w-10 h-5 rounded-full transition-all duration-300",
+                    formData.showSignatureByDefault ? "bg-orange-500" : "bg-white/10"
+                  )}></div>
+                  <div className={cn(
+                    "absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
+                    formData.showSignatureByDefault ? "translate-x-5" : "translate-x-0"
+                  )}></div>
+                </div>
+                <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show on all Docs by default</span>
+              </label>
+            </div>
+
             <button 
               onClick={onConnectDrive}
               disabled={isConnectingDrive}

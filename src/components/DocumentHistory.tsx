@@ -21,10 +21,11 @@ import DocumentModal from './DocumentModal';
 interface DocumentHistoryProps {
   documents: BillingDocument[];
   onDelete: (id: string) => void;
+  onUpdate: (doc: BillingDocument) => Promise<void>;
   settings: AppSettings;
 }
 
-export default function DocumentHistory({ documents, onDelete, settings }: DocumentHistoryProps) {
+export default function DocumentHistory({ documents, onDelete, onUpdate, settings }: DocumentHistoryProps) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<string>('');
@@ -368,6 +369,7 @@ export default function DocumentHistory({ documents, onDelete, settings }: Docum
         <DocumentModal 
           document={selectedDoc} 
           settings={settings}
+          onUpdate={onUpdate}
           onClose={() => setSelectedDoc(null)} 
         />
       )}

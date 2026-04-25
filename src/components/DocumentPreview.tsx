@@ -221,26 +221,20 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
 
           {/* Signature */}
           <div className="w-1/3 flex flex-col items-end justify-end pt-12">
-            {!isChallan && !isQuote && (
-              <div className="text-center">
-                <div className="border-b border-gray-800 w-40 mb-1"></div>
-                <div className="text-[10px] font-bold uppercase">Signature</div>
+            <div className="text-center relative">
+              {data.showSignature && (
+                <img 
+                  src="/WhatsApp_Image_2026-04-25_at_11.43.39_AM-removebg-preview.png" 
+                  alt="Signature" 
+                  className="absolute -top-[54px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <div className="border-b border-gray-800 w-40 mb-1"></div>
+              <div className="text-[10px] font-bold uppercase">
+                {isChallan || isQuote ? 'Authorized Signature' : 'Signature'}
               </div>
-            )}
-            {(isChallan || isQuote) && (
-              <div className="text-center relative">
-                {isQuote && (
-                  <img 
-                    src="/WhatsApp_Image_2026-04-25_at_11.43.39_AM-removebg-preview.png" 
-                    alt="Signature" 
-                    className="absolute -top-14 left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                <div className="border-b border-gray-800 w-40 mb-1"></div>
-                <div className="text-[10px] font-bold uppercase">Authorized Signature</div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

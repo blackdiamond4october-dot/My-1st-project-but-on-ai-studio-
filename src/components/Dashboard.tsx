@@ -37,9 +37,10 @@ import { ZALogo } from './DocumentPreview';
 interface DashboardProps {
   documents: BillingDocument[];
   settings: AppSettings;
+  onUpdate: (doc: BillingDocument) => Promise<void>;
 }
 
-export default function Dashboard({ documents, settings }: DashboardProps) {
+export default function Dashboard({ documents, settings, onUpdate }: DashboardProps) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [analyticsView, setAnalyticsView] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   const [selectedDoc, setSelectedDoc] = useState<BillingDocument | null>(null);
@@ -540,6 +541,7 @@ export default function Dashboard({ documents, settings }: DashboardProps) {
         <DocumentModal 
           document={selectedDoc} 
           settings={settings}
+          onUpdate={onUpdate}
           onClose={() => setSelectedDoc(null)} 
         />
       )}

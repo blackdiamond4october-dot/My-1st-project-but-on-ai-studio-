@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2, Share2 } from 'lucide-react';
+import { X, Printer, Download, Receipt, Package, ClipboardList, Loader2, Share2, Calendar } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { cn } from '../lib/utils';
@@ -9,14 +9,30 @@ import DocumentPreview from './DocumentPreview';
 interface DocumentModalProps {
   document: BillingDocument;
   settings: AppSettings;
+  onUpdate: (doc: BillingDocument) => Promise<void>;
   onClose: () => void;
 }
 
-export default function DocumentModal({ document: doc, settings, onClose }: DocumentModalProps) {
+export default function DocumentModal({ document: doc, settings, onUpdate, onClose }: DocumentModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [sharedFile, setSharedFile] = useState<File | null>(null);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [newDate, setNewDate] = useState(doc.date);
+  const [isUpdatingDate, setIsUpdatingDate] = useState(false);
+
+  const handleUpdateDate = async () => {
+    setIsUpdatingDate(true);
+    try {
+      await onUpdate({ ...doc, date: newDate });
+      setIsEditingDate(false);
+    } catch (err) {
+      alert('Failed to update date');
+    } finally {
+      setIsUpdatingDate(false);
+    }
+  };
 
   const handlePrint = () => {
     const content = printRef.current;
@@ -232,6 +248,36 @@ export default function DocumentModal({ document: doc, settings, onClose }: Docu
           </div>
 
           <div className="flex items-center gap-2 lg:gap-4">
+            {isEditingDate ? (
+              <div className="flex items-center gap-2 bg-white/5 p-1 rounded-lg">
+                <input 
+                  type="date" 
+                  value={newDate}
+                  onChange={e => setNewDate(e.target.value)}
+                  className="bg-transparent text-white text-xs font-bold outline-none border-none p-1 w-28"
+                />
+                <button 
+                  onClick={handleUpdateDate}
+                  disabled={isUpdatingDate}
+                  className="px-3 py-1 rounded bg-orange-500 text-black text-[10px] font-bold hover:bg-orange-600 disabled:opacity-50"
+                >
+                  {isUpdatingDate ? '...' : 'SAVE'}
+                </button>
+                <button 
+                  onClick={() => { setIsEditingDate(false); setNewDate(doc.date); }}
+                  className="px-3 py-1 rounded bg-white/10 text-white text-[10px] font-bold hover:bg-white/20"
+                >
+                  CANCEL
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setIsEditingDate(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
+              >
+                <Calendar size={16} /> <span className="hidden sm:inline">EDIT DATE</span>
+              </button>
+            )}
             <button 
               onClick={handleShare}
               disabled={isSharing}
