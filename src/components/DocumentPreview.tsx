@@ -2,8 +2,7 @@ import React from 'react';
 import { BillingDocument } from '../types';
 import { formatCurrency, formatDate } from '../lib/utils';
 
-import { LOGO_BASE64, COMPANY_NAME_BASE64, SIGN_OF_QUALITY_BASE64 } from '../image-data';
-import signatureImg from '../signature.png';
+import { LOGO_BASE64, COMPANY_NAME_BASE64, SIGN_OF_QUALITY_BASE64, SIGNATURE_BASE64 } from '../image-data';
 
 const logoImg = LOGO_BASE64;
 const companyNameImg = COMPANY_NAME_BASE64;
@@ -225,9 +224,9 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
             <div className="text-center relative">
               {data.showSignature && (
                 <img 
-                  src={signatureImg} 
+                  src={SIGNATURE_BASE64} 
                   alt="Signature" 
-                  className="absolute -top-[114px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
+                  className="absolute -top-[124px] left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
                   referrerPolicy="no-referrer"
                 />
               )}
