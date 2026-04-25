@@ -228,7 +228,15 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
               </div>
             )}
             {(isChallan || isQuote) && (
-              <div className="text-center">
+              <div className="text-center relative">
+                {isQuote && (
+                  <img 
+                    src="/WhatsApp_Image_2026-04-25_at_11.43.39_AM-removebg-preview.png" 
+                    alt="Signature" 
+                    className="absolute -top-14 left-1/2 -translate-x-1/2 w-36 h-auto object-contain pointer-events-none"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
                 <div className="border-b border-gray-800 w-40 mb-1"></div>
                 <div className="text-[10px] font-bold uppercase">Authorized Signature</div>
               </div>
