@@ -31,6 +31,8 @@
         "cnic": { "type": "string" },
         "ntn": { "type": "string" },
         "showCnicNtn": { "type": "boolean" },
+        "showPaymentStatus": { "type": "boolean" },
+        "paymentStatus": { "type": "string", "enum": ["paid", "unpaid"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["type", "refNo", "date", "customer", "items", "currency", "total", "createdAt"]
