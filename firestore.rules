@@ -112,7 +112,10 @@ service cloud.firestore {
              (data.get('showSignature', true) is bool) &&
              (data.get('cnic', '') is string) &&
              (data.get('ntn', '') is string) &&
-             (data.get('showCnicNtn', false) is bool);
+             (data.get('showCnicNtn', false) is bool) &&
+             (data.get('showPaymentStatus', false) is bool) &&
+             (data.get('paymentStatus', 'unpaid') is string) &&
+             (data.get('paymentStatus', 'unpaid') in ['paid', 'unpaid']);
     }
 
     // ===============================================================
