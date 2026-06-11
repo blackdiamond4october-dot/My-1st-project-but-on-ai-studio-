@@ -26,6 +26,8 @@ export interface BillingDocument {
   cnic?: string;
   ntn?: string;
   showCnicNtn?: boolean;
+  showPaymentStatus?: boolean;
+  paymentStatus?: 'paid' | 'unpaid';
   createdAt: string;
 }
 
