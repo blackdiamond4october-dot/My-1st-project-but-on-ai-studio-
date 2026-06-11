@@ -1,6 +1,6 @@
 import React from 'react';
 import { BillingDocument } from '../types';
-import { formatCurrency, formatDate } from '../lib/utils';
+import { formatCurrency, formatDate, cn } from '../lib/utils';
 
 import { LOGO_BASE64, COMPANY_NAME_BASE64, SIGN_OF_QUALITY_BASE64, SIGNATURE_BASE64 } from '../image-data';
 
@@ -211,7 +211,26 @@ export default function DocumentPreview({ data }: DocumentPreviewProps) {
         </div>
 
         {/* Bottom Section: Terms and Signature side-by-side */}
-        <div className="mt-4 flex gap-4 items-start">
+        <div className="mt-4 flex gap-4 items-start relative">
+          {/* Paid / Unpaid Rubber Stamp */}
+          {data.showPaymentStatus && type === 'bill' && (
+            <div 
+              className={cn(
+                "absolute left-[35%] top-[5%] -rotate-12 px-5 py-1.5 text-center font-black tracking-[0.25em] text-[22px] select-none pointer-events-none z-20 uppercase rounded",
+                data.paymentStatus === 'paid' 
+                  ? "text-emerald-600 bg-white/50" 
+                  : "text-red-600 bg-white/50"
+              )}
+              style={{
+                border: '4px double currentColor',
+                textShadow: '0.5px 0.5px 0px rgba(255,255,255,0.7)',
+                opacity: 0.9,
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}
+            >
+              {data.paymentStatus === 'paid' ? 'PAID' : 'UNPAID'}
+            </div>
+          )}
           {/* Terms & Conditions */}
           <div className="flex-1">
             {type === 'quotation' && data.terms && (
