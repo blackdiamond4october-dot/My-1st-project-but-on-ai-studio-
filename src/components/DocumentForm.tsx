@@ -53,6 +53,8 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
   const [cnic, setCnic] = useState(settings.cnic || '');
   const [ntn, setNtn] = useState(settings.ntn || '');
   const [showCnicNtn, setShowCnicNtn] = useState(settings.showCnicNtnByDefault ?? false);
+  const [showPaymentStatus, setShowPaymentStatus] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'paid' | 'unpaid'>('paid');
   const [items, setItems] = useState<LineItem[]>([{ desc: '', qty: 1, price: 0, deliveryPeriod: '' }]);
   const [previewScale, setPreviewScale] = useState(0.48);
   const [isSaving, setIsSaving] = useState(false);
@@ -130,6 +132,8 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
       cnic,
       ntn,
       showCnicNtn,
+      showPaymentStatus,
+      paymentStatus,
       currency: settings.currency,
       total: subtotal,
       createdAt: new Date().toISOString()
@@ -170,6 +174,8 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
     cnic,
     ntn,
     showCnicNtn,
+    showPaymentStatus,
+    paymentStatus,
     currency: settings.currency,
     total: subtotal,
     address: settings.address,
@@ -462,6 +468,74 @@ export default function DocumentForm({ settings, onSave }: DocumentFormProps) {
                     </FormGroup>
                   </div>
                 )}
+
+                <div className="border-t border-white/5 pt-4 space-y-4">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only" 
+                        checked={showPaymentStatus} 
+                        onChange={e => setShowPaymentStatus(e.target.checked)} 
+                      />
+                      <div className={cn(
+                        "w-10 h-5 rounded-full transition-all duration-300",
+                        showPaymentStatus ? "bg-orange-500" : "bg-white/10"
+                      )}></div>
+                      <div className={cn(
+                        "absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
+                        showPaymentStatus ? "translate-x-5" : "translate-x-0"
+                      )}></div>
+                    </div>
+                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", settings.theme === 'dark' ? "text-white/60" : "text-black/60")}>Show Payment Stamp</span>
+                  </label>
+
+                  {showPaymentStatus && (
+                    <div className={cn(
+                      "flex items-center justify-between p-2 rounded-xl border",
+                      settings.theme === 'dark' ? "border-white/5 bg-black/20" : "border-black/5 bg-gray-50"
+                    )}>
+                      <span className={cn("text-[9px] font-bold uppercase tracking-wider ml-2", settings.theme === 'dark' ? "text-white/40" : "text-black/40")}>Stamp Selection</span>
+                      <div className={cn(
+                        "relative flex items-center p-1 rounded-lg w-48",
+                        settings.theme === 'dark' ? "bg-black/40" : "bg-gray-200"
+                      )}>
+                        <div 
+                          className={cn(
+                            "absolute top-1 bottom-1 rounded-md transition-all duration-300 w-[calc(50%-4px)] shadow-md",
+                            paymentStatus === 'paid' 
+                              ? "left-1 bg-emerald-500/20 border border-emerald-500/30" 
+                              : "left-[calc(50%+1px)] bg-red-500/20 border border-red-500/30"
+                          )} 
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setPaymentStatus('paid')}
+                          className={cn(
+                            "flex-1 text-center text-[10px] font-bold py-1.5 z-10 transition-colors",
+                            paymentStatus === 'paid' 
+                              ? "text-emerald-400" 
+                              : settings.theme === 'dark' ? "text-white/40 hover:text-white/70" : "text-black/40 hover:text-black/70"
+                          )}
+                        >
+                          PAID
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentStatus('unpaid')}
+                          className={cn(
+                            "flex-1 text-center text-[10px] font-bold py-1.5 z-10 transition-colors",
+                            paymentStatus === 'unpaid' 
+                              ? "text-red-500" 
+                              : settings.theme === 'dark' ? "text-white/40 hover:text-white/70" : "text-black/40 hover:text-black/70"
+                          )}
+                        >
+                          UNPAID
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
